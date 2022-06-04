@@ -1,8 +1,7 @@
+require('dotenv').config()
 const express = require('express')
 const mongoose = require('mongoose')
 const app = express()
-
-const Person = require('./models/Person')
 
 app.use(
     express.urlencoded({
@@ -12,28 +11,11 @@ app.use(
 
 app.use(express.json())
 
-// API Routes
-app.post('/person', async (req, res) => { 
-    
-    // req.body
-    const {name, salary, approved} = req.body
+// Rotas da API
+const personRoutes = require('./routes/personRoutes')
 
-    const person = {
-        name,
-        salary,
-        approved
-    }
+app.use('/person', personRoutes)
 
-    try {
-        await Person.create(person)
-        
-        res.status(201).json({message: 'Pessoa inserida no sistema com sucesso! '})
-
-    } catch (error) {
-        res.status(500).json({error: error})
-    }
-
-})
 
 //Initial Route
 app.get('/', (req, res) => {
@@ -41,8 +23,8 @@ app.get('/', (req, res) => {
 })
 
 // entregar uma porta
-const DB_USER = 'lucaslamin'
-const DB_PASSWORD = encodeURIComponent('Luc@Bru152829')
+const DB_USER = process.env.DB_USER
+const DB_PASSWORD = encodeURIComponent(process.env.DB_PASSWORD)
 
 mongoose
   .connect(
